@@ -35,6 +35,7 @@ getVersion	KEYWORD2
 sendCommand	KEYWORD2
 sendCommand	KEYWORD2
 getResponse	KEYWORD2
+getID	KEYWORD2
 
 #######################################
 # Constants (LITERAL1)
