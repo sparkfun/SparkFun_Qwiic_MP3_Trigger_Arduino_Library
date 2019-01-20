@@ -8,6 +8,9 @@
   This example shows how read the interrupt pin on the Trigger. Once a track has completed playing the INT pin
   will go low. Once it is low, the master must clear the interrupt before it will go high.
 
+  Feel like supporting open source hardware?
+  Buy a board from SparkFun! https://www.sparkfun.com/products/15165
+
   Hardware Connections:
   Plug in headphones
   Make sure the SD card is in the socket and has some MP3s in the root directory
@@ -43,8 +46,9 @@ void setup() {
 }
 
 void loop() {
-  //Serial.println(".");
-  //delay(100);
+  Serial.print(".");
+  delay(100);
+
   if (digitalRead(mp3InterruptPin) == LOW)
   {
     Serial.println("Interrupt! Song is complete.");
@@ -52,6 +56,4 @@ void loop() {
     mp3.clearInterrupts(); //Clear any interrupt bits before starting a new song
     mp3.playTrack(1); //Being playing a new song - this can take ~250ms for 
   }
-
-  //delay(50);
 }

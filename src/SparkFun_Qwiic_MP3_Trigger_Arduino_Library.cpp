@@ -45,13 +45,19 @@ boolean MP3TRIGGER::begin(TwoWire &wirePort, uint8_t deviceAddress)
 }
 
 
-//Returns true if I2C device ack's
+//Returns true if I2C device has the correct ID
 boolean MP3TRIGGER::isConnected()
 {
-  _i2cPort->beginTransmission((uint8_t)_deviceAddress);
-  if (_i2cPort->endTransmission() != 0)
-    return (false); //Sensor did not ACK
-  return (true);
+  if(getID() == 0x39) return(true); //MP3 Trigger ID should be 0x39
+  return (false);
+}
+
+//Returns the device ID
+uint8_t MP3TRIGGER::getID()
+{
+  sendCommand(COMMAND_GET_ID);
+
+  return(getResponse()); //Should return 0x39
 }
 
 //Checks the status of the player to see if MP3 is playing
@@ -192,9 +198,6 @@ char * MP3TRIGGER::getSongName()
 	  }
   }
   thisSongName[spot] = '\0'; //Terminate string
-  
-  Serial.print("Song: ");
-  Serial.println(thisSongName);
   
   return(thisSongName);
 }

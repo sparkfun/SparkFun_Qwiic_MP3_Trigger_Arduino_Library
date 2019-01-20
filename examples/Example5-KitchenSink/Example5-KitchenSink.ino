@@ -10,6 +10,9 @@
 
   Open the serial terminal at 9600bps to get the available menu of commands.
 
+  Feel like supporting open source hardware?
+  Buy a board from SparkFun! https://www.sparkfun.com/products/15165
+
   Hardware Connections:
   Plug in headphones
   Make sure the SD card is in the socket and has some MP3s in the root directory
@@ -39,7 +42,7 @@ void setup()
 
   if (mp3.hasCard() == false)
   {
-    Serial.println("SD card missing. Freezing...");
+    Serial.println("Qwiic MP3 is missing its SD card. Freezing...");
     while (1);
   }
 
@@ -48,41 +51,34 @@ void setup()
   Serial.print("Song count: ");
   Serial.println(mp3.getSongCount());
 
-  Serial.print("Firmware version: ");
-  Serial.println(mp3.getVersion());
-
   Serial.print("Volume level: ");
   Serial.println(mp3.getVolume());
 
   Serial.print("EQ Setting: ");
   byte eqSetting = mp3.getEQ();
-  if(eqSetting == 0) Serial.print("Normal");
-  else if(eqSetting == 1) Serial.print("Pop");
-  else if(eqSetting == 2) Serial.print("Rock");
-  else if(eqSetting == 3) Serial.print("Jazz");
-  else if(eqSetting == 4) Serial.print("Classic");
-  else if(eqSetting == 5) Serial.print("Bass");
+  if (eqSetting == 0) Serial.print("Normal");
+  else if (eqSetting == 1) Serial.print("Pop");
+  else if (eqSetting == 2) Serial.print("Rock");
+  else if (eqSetting == 3) Serial.print("Jazz");
+  else if (eqSetting == 4) Serial.print("Classic");
+  else if (eqSetting == 5) Serial.print("Bass");
   Serial.println();
+
+  Serial.print("Firmware version: ");
+  Serial.println(mp3.getVersion());
 }
 
 void loop()
 {
   Serial.println();
   Serial.println("Qwiic MP3 Trigger");
-
-  if (mp3.isPlaying() == true)
-  {
-    String songName = mp3.getSongName();
-    Serial.print("Now playing: ");
-    Serial.println(songName);
-  }
-
   Serial.println("1) Play track");
   Serial.println("2) Play file");
   Serial.println("3) Play next");
   Serial.println("4) Play previous");
   Serial.println("5) Set volume");
   Serial.println("6) Set EQ");
+  Serial.println("7) Get Song Name");
   Serial.println("P) Pause/Play from Pause");
   Serial.println("S) Stop");
 
@@ -119,8 +115,9 @@ void loop()
         break;
       }
     case '3':
-        mp3.playNext();
-        break;
+      mp3.playNext();
+      delay(100); //Give the main loop a bit of time before we check to see if a track is playing (allow song to start)
+      break;
     case '4':
       mp3.playPrevious();
       break;
@@ -144,6 +141,19 @@ void loop()
         int eqLevel = Serial.parseInt();
 
         mp3.setEQ(eqLevel); //EQ is 0-normal, 1-pop, 2-rock, 3-jazz, 4-classical, 5-bass
+        break;
+      }
+
+    case '7':
+      {
+        if (mp3.isPlaying() == true)
+          Serial.print("Now playing: ");
+        else
+          Serial.print("Last played: ");
+
+        String songName = mp3.getSongName();
+        Serial.println(songName);
+
         break;
       }
 

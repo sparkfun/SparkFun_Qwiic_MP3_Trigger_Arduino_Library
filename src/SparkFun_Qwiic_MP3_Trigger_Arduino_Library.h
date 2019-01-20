@@ -46,6 +46,7 @@
 #define COMMAND_CLEAR_INTERRUPTS 0x0D
 #define COMMAND_GET_VOLUME 0x0E
 #define COMMAND_GET_EQ 0x0F
+#define COMMAND_GET_ID 0x10
 #define COMMAND_SET_ADDRESS 0xC7
 
 class MP3TRIGGER {
@@ -53,7 +54,8 @@ class MP3TRIGGER {
     MP3TRIGGER();
 
     boolean begin(TwoWire &wirePort = Wire, uint8_t deviceAddress = QWIIC_MP3_TRIGGER_ADDR);
-    boolean isConnected(); //Checks if device ack's the I2C request
+    boolean isConnected(); //Returns true if device's ID is what it should be
+	uint8_t getID(); //Queries device for its ID
 	
 	boolean isPlaying(); //Returns true if song is playing
 	boolean setAddress(byte newAddress); //Change the I2C address of this address to newAddress

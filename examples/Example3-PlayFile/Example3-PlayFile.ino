@@ -12,6 +12,9 @@
   Note: For this example you will need to load an MP3 onto the device and name the file F003.mp3. You can
   use a USB C cable to load a file directly onto the SD card.
 
+  Feel like supporting open source hardware?
+  Buy a board from SparkFun! https://www.sparkfun.com/products/15165
+
   Hardware Connections:
   Plug in headphones
   Make sure the SD card is in the socket and has some MP3s in the root directory

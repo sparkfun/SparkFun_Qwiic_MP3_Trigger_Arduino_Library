@@ -10,13 +10,16 @@
   no track is playing and pause is pressed then the last played track will be started from
   the beginning.
 
-  Note: For this example you will need to load an MP3 onto the device and name the file F003.mp3. You can
-  use a microB cable to load a file directly onto the SD card.
+  Note: For this example you will need to load an MP3 onto the device. You can
+  use a USB C cable to load a file directly onto the SD card.
+
+  Feel like supporting open source hardware?
+  Buy a board from SparkFun! https://www.sparkfun.com/products/15165
 
   Hardware Connections:
   Plug in headphones
   Make sure the SD card is in the socket
-  Don't have a USB microB cable connected right now
+  Don't have a USB cable connected right now
   If needed, attach a Qwiic Shield to your Arduino/Photon/ESP32 or other
   Plug the Qwiic device onto an available Qwiic port
   Open the serial monitor at 9600 baud
@@ -46,7 +49,7 @@ void setup()
 
   Serial.println("Press S to stop or P to pause.");
 
-  mp3PlayFile(3); //Play file F003.mp3
+  mp3.playTrack(1); //Play the first track on the SD card
 }
 
 void loop()

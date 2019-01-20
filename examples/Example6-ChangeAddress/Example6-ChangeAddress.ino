@@ -2,18 +2,23 @@
   Controlling the Qwiic MP3 Trigger with I2C Commands
   By: Nathan Seidle
   SparkFun Electronics
-  Date: April 23rd, 2018
+  Date: January 12th, 2019
   License: This code is public domain but you buy me a beer if you use this and we meet someday (Beerware license).
 
-  This example shows how to change the I2C address of the Qwiic MP3 Trigger. 
+  This example shows how to change the I2C address of the Qwiic MP3 Trigger.
+  Valid addresses are 0x08 to 0x77 - 111 possible addresses!
+  Device's I2C address is stored to memory and loaded on each power-on
 
   Note: If you accidentally set the device into an unknown you can either use the I2C scanner sketch found online
   or you can close the solder jumper on the Qwiic MP3 Trigger. Closing the jumper will force the device address to 0x36.
 
+  Feel like supporting open source hardware?
+  Buy a board from SparkFun! https://www.sparkfun.com/products/15165
+
   Hardware Connections:
   Plug in headphones
-  Make sure the SD card is in the socket
-  Don't have a USB microB cable connected right now
+  Make sure the SD card is in the socket and has some MP3s in the root directory
+  Don't have a USB cable connected right now
   If needed, attach a Qwiic Shield to your Arduino/Photon/ESP32 or other
   Plug the Qwiic device onto an available Qwiic port
   Open the serial monitor at 9600 baud
@@ -21,45 +26,122 @@
 
 #include <Wire.h>
 
-byte originalMP3Address = 0x37; //This is the address that the device is currently using
-byte newMP3Address = 0x77; //This is the address you want to change the device to
-
-byte mp3Address = originalMP3Address; //This is the variable used in the mp3Control functions
+#include "SparkFun_Qwiic_MP3_Trigger_Arduino_Library.h" //http://librarymanager/All#SparkFun_MP3_Trigger
+MP3TRIGGER mp3;
 
 void setup()
 {
   Serial.begin(9600);
+  Serial.println("Qwiic MP3 Trigger Example");
 
   Wire.begin();
 
-  //Check to see if MP3 is present
-  if(mp3IsPresent() == false)
+  //Scan bus looking for an MP3 Trigger
+  //The .begin() function checks the device ID to verify the device at a given address is a Trigger
+  byte currentAddress;
+  for (currentAddress = 1 ; currentAddress < 127 ; currentAddress++)
   {
-    Serial.println("Qwiic MP3 failed to respond. Please check wiring and possibly the I2C address. Freezing...");
-    while(1);
+    currentAddress = findI2CDevice(currentAddress); //Start scanning at last address
+    if(currentAddress == 0) break; //No device found!
+    if (mp3.begin(Wire, currentAddress) == true) break; //Device found!
   }
 
-  Serial.print("Song count: ");
-  Serial.println(mp3SongCount());
+  if (currentAddress == 0 || currentAddress == 127)
+  {
+    Serial.println("No MP3 Triggers found on the I2C bus. Freezing...");
+    while (1);
+  }
 
-  Serial.print("Press a key to change the address to 0x");
-  Serial.println(newMP3Address, HEX);
+  //Begin communication with MP3 Trigger at current address
+  if (mp3.begin(Wire, currentAddress) == true)
+  {
+    Serial.print("MP3 Trigger found at address 0x");
+    Serial.print(currentAddress, HEX);
+    Serial.print(" / ");
+    Serial.print(currentAddress); //Print decimal
+    Serial.println("(decimal)");
 
-  while(Serial.available() == false)
-    delay(100); //Wait for user to send character
+    byte newAddress = 0;
+    while (1)
+    {
+      while (Serial.available()) Serial.read(); //Trash any incoming chars
+      Serial.println("Enter the address you'd like to change to in decimal. Valid is 8 to 119.");
+      while (Serial.available() == false) ; //Wait for user to send character
 
-  mp3ChangeAddress(newMP3Address); 
-  mp3Address = newMP3Address; //We must update our local global variable to this new address so that we can continue to communicate
+      newAddress = Serial.parseInt(); //Get decimal address from user
+      if (newAddress >= 8 && newAddress <= 119) break; //Address is valid
+      Serial.println("Invalid address. Please try again.");
+    }
 
-  Serial.print("Device address should now be changed to 0x");
-  Serial.println(newMP3Address, HEX);
+    mp3.setAddress(newAddress); //Change I2C address of this device to 0x56.
+    //Valid addresses are 0x08 to 0x77 - 111 possible addresses!
+    //Device's I2C address is stored to memory and loaded on each power-on
 
-  mp3PlayFile(3); //Play file F003.mp3
+    delay(10); //Time required for device to record address to EEPROM and re-init its I2C
 
-  Serial.println("The Qwiic MP3 Trigger should be playing a song but from the new I2C address");
+    if (mp3.begin(Wire, newAddress) == true)
+    {
+      Serial.print("Address successfully changed to 0x");
+      Serial.print(newAddress, HEX);
+      Serial.print(" / ");
+      Serial.print(newAddress); //Print decimal
+      Serial.println("(decimal)");
+      Serial.print("Now load another example sketch using .begin(Wire, 0x");
+      Serial.print(newAddress, HEX);
+      Serial.println(") to use this Qwiic MP3 Trigger");
+      Serial.println("Freezing...");
+      while (1);
+    }
+  }
+
+  //Something went wrong, begin scanning I2C bus for valid addresses
+  Serial.println("Address change failed. Beginning an I2C scan.");
 }
 
 void loop()
 {
+  Serial.println("Scanning...");
 
+  byte found = 0;
+  for (byte address = 1 ; address < 127 ; address++)
+  {
+    address = findI2CDevice(address); //Scans bus starting from given address. Returns address of discovered device.
+
+    if (address > 0)
+    {
+      Serial.print("I2C device found at address 0x");
+      if (address < 0x0F) Serial.print("0"); //Pretty print
+      Serial.print(address, HEX);
+      Serial.print(" / ");
+      Serial.print(address); //Print decimal
+      Serial.println("(decimal)");
+
+      found++;
+    }
+    else
+    {
+      if (found == 0) Serial.println("No I2C devices found\n");
+      break; //Done searching
+    }
+  }
+
+  delay(5000);
+}
+
+//Scans the ICC bus looking for devices
+//Start scanning from a given address
+byte findI2CDevice(byte startingAddress)
+{
+  if (startingAddress == 0) startingAddress = 1; //Error check
+
+  for (byte address = startingAddress; address < 127; address++)
+  {
+    Wire.beginTransmission(address);
+    byte response = Wire.endTransmission();
+
+    if (response == 0) //A device acknowledged us at this address!
+      return (address);
+  }
+
+  return (0); //No device found
 }
