@@ -31,19 +31,25 @@ MP3TRIGGER::MP3TRIGGER()
 
 }
 
-//Initializes the sensor with basic settings
-//Returns false if sensor is not detected
+//Initializes the device with basic settings
+//Returns false if device is not detected
 boolean MP3TRIGGER::begin(TwoWire &wirePort, uint8_t deviceAddress)
 {
   _i2cPort = &wirePort; //Get setting from user
 
   _deviceAddress = deviceAddress; //Get setting from user
 
-  if (isConnected() == false) return (false); //Check for sensor presence
+  if (isConnected() == false)
+  {
+	delay(2000); //Device may take up to 1500ms to mount the SD card
+	
+	//Try again
+	if (isConnected() == false)
+	  return (false); //No device detected
+  }
 
   return (true); //We're all setup!
 }
-
 
 //Returns true if I2C device has the correct ID
 boolean MP3TRIGGER::isConnected()
