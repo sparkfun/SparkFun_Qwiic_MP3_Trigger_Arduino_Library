@@ -31,9 +31,15 @@ Repository Contents
 
 Documentation
 --------------
-* **[Qwiic MP3 Trigger Hookup Guide](https://learn.sparkfun.com/tutorials/new-tutorial)** - Hookup guide for the Qwiic Twist
+* **[Qwiic MP3 Trigger Hookup Guide](https://learn.sparkfun.com/tutorials/qwiic-mp3-trigger-hookup-guide)** - Hookup guide for the Qwiic MP3 Trigger
 * **[Installing an Arduino Library Guide](https://learn.sparkfun.com/tutorials/installing-an-arduino-library)** - Basic information on how to install an Arduino library.
 * **[Product Repository](https://github.com/sparkfun/Qwiic_MP3_Trigger)** - Main repository (including hardware files)
+
+Product Versions
+----------------
+* [DEV-15165](https://www.sparkfun.com/products/15165)- SparkFun Qwiic MP3 Trigger
+* [SPX-14808](https://www.sparkfun.com/products/14808)- SparkX MP3 Trigger (buzzing fixed!)
+* [SPX-14714](https://www.sparkfun.com/products/retired/14714) - Retired SparkX MP3 Trigger
 
 License Information
 -------------------
