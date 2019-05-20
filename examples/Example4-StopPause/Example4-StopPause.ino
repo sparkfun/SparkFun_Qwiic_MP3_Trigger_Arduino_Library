@@ -27,7 +27,8 @@
 
 #include <Wire.h>
 
-byte mp3Address = 0x37; //Unshifted 7-bit default address for Qwiic MP3
+#include "SparkFun_Qwiic_MP3_Trigger_Arduino_Library.h" //http://librarymanager/All#SparkFun_MP3_Trigger
+MP3TRIGGER mp3;
 
 void setup()
 {
@@ -35,17 +36,17 @@ void setup()
 
   Wire.begin();
 
-  //Check to see if MP3 is present
-  if(mp3IsPresent() == false)
+  //Check to see if Qwiic MP3 is present on the bus
+  if (mp3.begin() == false)
   {
     Serial.println("Qwiic MP3 failed to respond. Please check wiring and possibly the I2C address. Freezing...");
-    while(1);
+    while (1);
   }
 
-  mp3ChangeVolume(10); //Volume can be 0 (off) to 31 (max)
+  mp3.setVolume(10); //Volume can be 0 (off) to 31 (max)
 
   Serial.print("Song count: ");
-  Serial.println(mp3SongCount());
+  Serial.println(mp3.getSongCount());
 
   Serial.println("Press S to stop or P to pause.");
 
@@ -62,11 +63,11 @@ void loop()
   {
     case 'S':
     case 's':
-      mp3Stop();
+      mp3.stop();
       break;
     case 'P':
     case 'p':
-      mp3Pause(); //Pause, or play from pause, the current track
+      mp3.pause(); //Pause, or play from pause, the current track
       break;
     default:
       Serial.print("Unknown character: ");
