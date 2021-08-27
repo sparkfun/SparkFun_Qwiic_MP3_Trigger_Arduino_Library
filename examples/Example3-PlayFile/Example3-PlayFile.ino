@@ -21,7 +21,7 @@
   Don't have a USB cable connected to the Qwiic MP3 Trigger right now
   If needed, attach a Qwiic Shield to your Arduino/Photon/ESP32 or other
   Plug the Qwiic device onto an available Qwiic port
-  Open the serial monitor at 9600 baud
+  Open the serial monitor at 115200 baud
 */
 
 #include <Wire.h> //Needed for I2C to Qwiic MP3 Trigger
@@ -31,7 +31,7 @@ MP3TRIGGER mp3;
 
 void setup()
 {
-  Serial.begin(9600);
+  Serial.begin(115200);
 
   Wire.begin();
 
@@ -39,7 +39,8 @@ void setup()
   if (mp3.begin() == false)
   {
     Serial.println("Qwiic MP3 failed to respond. Please check wiring and possibly the I2C address. Freezing...");
-    while (1);
+    while (1)
+      ;
   }
 
   mp3.setVolume(10); //Volume can be 0 (off) to 31 (max)
@@ -54,5 +55,4 @@ void setup()
 
 void loop()
 {
-
 }

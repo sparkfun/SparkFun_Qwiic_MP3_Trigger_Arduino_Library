@@ -17,7 +17,7 @@
   Don't have a USB cable connected right now
   If needed, attach a Qwiic Shield to your Arduino/Photon/ESP32 or other
   Plug the Qwiic device onto an available Qwiic port
-  Open the serial monitor at 9600 baud
+  Open the serial monitor at 115200 baud
 */
 
 #include <Wire.h> //Needed for I2C to Qwiic MP3 Trigger
@@ -25,17 +25,19 @@
 #include "SparkFun_Qwiic_MP3_Trigger_Arduino_Library.h" //http://librarymanager/All#SparkFun_MP3_Trigger
 MP3TRIGGER mp3;
 
-void setup() {
-  Serial.begin(9600);
+void setup()
+{
+  Serial.begin(115200);
   Serial.println("Qwiic MP3 Trigger Example");
 
-  Wire1.begin(); //Compilation will fail here if your platform doesn't have multiple I2C ports
+  Wire1.begin();          //Compilation will fail here if your platform doesn't have multiple I2C ports
   Wire1.setClock(400000); //MP3 Trigger supports higher I2C rates
-  
+
   if (mp3.begin(Wire1) == false)
   {
     Serial.println("MP3 Trigger does not appear to be connected. Please check wiring. Freezing...");
-    while (1);
+    while (1)
+      ;
   }
 
   mp3.playTrack(1); //Begin playing the first track on the SD card
@@ -43,5 +45,6 @@ void setup() {
   Serial.println("All done!");
 }
 
-void loop() {
+void loop()
+{
 }

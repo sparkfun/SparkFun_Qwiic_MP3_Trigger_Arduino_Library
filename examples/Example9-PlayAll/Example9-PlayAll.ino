@@ -20,7 +20,7 @@
   Don't have a USB cable connected right now
   If needed, attach a Qwiic Shield to your Arduino/Photon/ESP32 or other
   Plug the Qwiic device onto an available Qwiic port
-  Open the serial monitor at 9600 baud
+  Open the serial monitor at 115200 baud
 */
 
 #include <Wire.h> //Needed for I2C to Qwiic MP3 Trigger
@@ -30,7 +30,7 @@ MP3TRIGGER mp3;
 
 void setup()
 {
-  Serial.begin(9600);
+  Serial.begin(115200);
 
   Wire.begin();
 
@@ -38,13 +38,15 @@ void setup()
   if (mp3.begin() == false)
   {
     Serial.println("Qwiic MP3 failed to respond. Please check wiring and possibly the I2C address. Freezing...");
-    while (1);
+    while (1)
+      ;
   }
 
   if (mp3.hasCard() == false)
   {
     Serial.println("Qwiic MP3 is missing its SD card. Freezing...");
-    while (1);
+    while (1)
+      ;
   }
 
   mp3.setVolume(10); //Volume can be 0 (off) to 31 (max)
@@ -57,12 +59,18 @@ void setup()
 
   Serial.print("EQ Setting: ");
   byte eqSetting = mp3.getEQ();
-  if (eqSetting == 0) Serial.print("Normal");
-  else if (eqSetting == 1) Serial.print("Pop");
-  else if (eqSetting == 2) Serial.print("Rock");
-  else if (eqSetting == 3) Serial.print("Jazz");
-  else if (eqSetting == 4) Serial.print("Classic");
-  else if (eqSetting == 5) Serial.print("Bass");
+  if (eqSetting == 0)
+    Serial.print("Normal");
+  else if (eqSetting == 1)
+    Serial.print("Pop");
+  else if (eqSetting == 2)
+    Serial.print("Rock");
+  else if (eqSetting == 3)
+    Serial.print("Jazz");
+  else if (eqSetting == 4)
+    Serial.print("Classic");
+  else if (eqSetting == 5)
+    Serial.print("Bass");
   Serial.println();
 
   Serial.print("Firmware version: ");

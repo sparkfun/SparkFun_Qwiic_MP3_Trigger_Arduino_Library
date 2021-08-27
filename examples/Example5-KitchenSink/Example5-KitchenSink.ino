@@ -8,7 +8,7 @@
   This example uses a serial menu system to demonstrate all the various functions of the
   Qwiic MP3 Trigger.
 
-  Open the serial terminal at 9600bps to get the available menu of commands.
+  Open the serial terminal at 115200 to get the available menu of commands.
 
   Feel like supporting open source hardware?
   Buy a board from SparkFun! https://www.sparkfun.com/products/15165
@@ -19,7 +19,7 @@
   Don't have a USB cable connected right now
   If needed, attach a Qwiic Shield to your Arduino/Photon/ESP32 or other
   Plug the Qwiic device onto an available Qwiic port
-  Open the serial monitor at 9600 baud
+  Open the serial monitor at 115200 baud
 */
 
 #include <Wire.h> //Needed for I2C to Qwiic MP3 Trigger
@@ -29,7 +29,7 @@ MP3TRIGGER mp3;
 
 void setup()
 {
-  Serial.begin(9600);
+  Serial.begin(115200);
 
   Wire.begin();
 
@@ -37,13 +37,15 @@ void setup()
   if (mp3.begin() == false)
   {
     Serial.println("Qwiic MP3 failed to respond. Please check wiring and possibly the I2C address. Freezing...");
-    while (1);
+    while (1)
+      ;
   }
 
   if (mp3.hasCard() == false)
   {
     Serial.println("Qwiic MP3 is missing its SD card. Freezing...");
-    while (1);
+    while (1)
+      ;
   }
 
   mp3.setVolume(10); //Volume can be 0 (off) to 31 (max)
@@ -56,12 +58,18 @@ void setup()
 
   Serial.print("EQ Setting: ");
   byte eqSetting = mp3.getEQ();
-  if (eqSetting == 0) Serial.print("Normal");
-  else if (eqSetting == 1) Serial.print("Pop");
-  else if (eqSetting == 2) Serial.print("Rock");
-  else if (eqSetting == 3) Serial.print("Jazz");
-  else if (eqSetting == 4) Serial.print("Classic");
-  else if (eqSetting == 5) Serial.print("Bass");
+  if (eqSetting == 0)
+    Serial.print("Normal");
+  else if (eqSetting == 1)
+    Serial.print("Pop");
+  else if (eqSetting == 2)
+    Serial.print("Rock");
+  else if (eqSetting == 3)
+    Serial.print("Jazz");
+  else if (eqSetting == 4)
+    Serial.print("Classic");
+  else if (eqSetting == 5)
+    Serial.print("Bass");
   Serial.println();
 
   Serial.print("Firmware version: ");
@@ -82,106 +90,116 @@ void loop()
   Serial.println("P) Pause/Play from Pause");
   Serial.println("S) Stop");
 
-  while (Serial.available()) Serial.read(); //Throw away incoming characters
+  while (Serial.available())
+    Serial.read(); //Throw away incoming characters
 
-  while (Serial.available() == false) delay(10); //Wait for user to send character
+  while (Serial.available() == false)
+    delay(10); //Wait for user to send character
 
   byte incoming = Serial.read();
 
   switch (incoming)
   {
-    case '1':
-      {
-        Serial.print("What track number do you want to play (1 to ");
-        Serial.print(mp3.getSongCount());
-        Serial.print(")?");
+  case '1':
+  {
+    Serial.print("What track number do you want to play (1 to ");
+    Serial.print(mp3.getSongCount());
+    Serial.print(")?");
 
-        while (Serial.available()) Serial.read(); //Throw away incoming characters
-        while (Serial.available() == false) delay(1); //Wait for user to send character
-        int trackNumber = Serial.parseInt();
+    while (Serial.available())
+      Serial.read(); //Throw away incoming characters
+    while (Serial.available() == false)
+      delay(1); //Wait for user to send character
+    int trackNumber = Serial.parseInt();
 
-        mp3.playTrack(trackNumber);
-        break;
-      }
-    case '2':
-      {
-        Serial.print("What specific file number would you like (ex: 6 will play F006.mp3)?");
+    mp3.playTrack(trackNumber);
+    break;
+  }
+  case '2':
+  {
+    Serial.print("What specific file number would you like (ex: 6 will play F006.mp3)?");
 
-        while (Serial.available()) Serial.read(); //Throw away incoming characters
-        while (Serial.available() == false) delay(1); //Wait for user to send character
-        int fileNumber = Serial.parseInt();
+    while (Serial.available())
+      Serial.read(); //Throw away incoming characters
+    while (Serial.available() == false)
+      delay(1); //Wait for user to send character
+    int fileNumber = Serial.parseInt();
 
-        mp3.playFile(fileNumber);
-        break;
-      }
-    case '3':
-      mp3.playNext();
-      delay(100); //Give the main loop a bit of time before we check to see if a track is playing (allow song to start)
-      break;
-    case '4':
-      mp3.playPrevious();
-      break;
-    case '5':
-      {
-        Serial.print("What volume would you like(0 to 31)?");
+    mp3.playFile(fileNumber);
+    break;
+  }
+  case '3':
+    mp3.playNext();
+    delay(100); //Give the main loop a bit of time before we check to see if a track is playing (allow song to start)
+    break;
+  case '4':
+    mp3.playPrevious();
+    break;
+  case '5':
+  {
+    Serial.print("What volume would you like(0 to 31)?");
 
-        while (Serial.available()) Serial.read(); //Throw away incoming characters
-        while (Serial.available() == false) delay(1); //Wait for user to send character
-        int volumeLevel = Serial.parseInt();
+    while (Serial.available())
+      Serial.read(); //Throw away incoming characters
+    while (Serial.available() == false)
+      delay(1); //Wait for user to send character
+    int volumeLevel = Serial.parseInt();
 
-        mp3.setVolume(volumeLevel); //Volume can be 0 (off) to 31 (max)
-        break;
-      }
-    case '6':
-      {
-        Serial.print("What EQ setting would you like(0 to 5)?");
+    mp3.setVolume(volumeLevel); //Volume can be 0 (off) to 31 (max)
+    break;
+  }
+  case '6':
+  {
+    Serial.print("What EQ setting would you like(0 to 5)?");
 
-        while (Serial.available()) Serial.read(); //Throw away incoming characters
-        while (Serial.available() == false) delay(1); //Wait for user to send character
-        int eqLevel = Serial.parseInt();
+    while (Serial.available())
+      Serial.read(); //Throw away incoming characters
+    while (Serial.available() == false)
+      delay(1); //Wait for user to send character
+    int eqLevel = Serial.parseInt();
 
-        mp3.setEQ(eqLevel); //EQ is 0-normal, 1-pop, 2-rock, 3-jazz, 4-classical, 5-bass
-        break;
-      }
+    mp3.setEQ(eqLevel); //EQ is 0-normal, 1-pop, 2-rock, 3-jazz, 4-classical, 5-bass
+    break;
+  }
 
-    case '7':
-      {
-        if (mp3.isPlaying() == true)
-          Serial.print("Now playing: ");
-        else
-          Serial.print("Last played: ");
+  case '7':
+  {
+    if (mp3.isPlaying() == true)
+      Serial.print("Now playing: ");
+    else
+      Serial.print("Last played: ");
 
-        String songName = mp3.getSongName();
-        Serial.println(songName);
+    String songName = mp3.getSongName();
+    Serial.println(songName);
 
-        break;
-      }
+    break;
+  }
 
-    case 'S':
-    case 's':
-      Serial.println("Stopping");
-      mp3.stop();
-      break;
+  case 'S':
+  case 's':
+    Serial.println("Stopping");
+    mp3.stop();
+    break;
 
-    case 'P':
-    case 'p':
-      if (mp3.isPlaying() == true)
-        Serial.println("Pausing");
-      else
-        Serial.println("Playing");
+  case 'P':
+  case 'p':
+    if (mp3.isPlaying() == true)
+      Serial.println("Pausing");
+    else
+      Serial.println("Playing");
 
-      mp3.pause(); //Pause, or play from pause, the current track
-      break;
+    mp3.pause(); //Pause, or play from pause, the current track
+    break;
 
-    case '\n':
-    case '\r':
-      //Ignore new line and return characters
-      break;
+  case '\n':
+  case '\r':
+    //Ignore new line and return characters
+    break;
 
-    default:
-      Serial.print("Unknown: ");
-      Serial.write(incoming);
-      Serial.println();
-      break;
+  default:
+    Serial.print("Unknown: ");
+    Serial.write(incoming);
+    Serial.println();
+    break;
   }
 }
