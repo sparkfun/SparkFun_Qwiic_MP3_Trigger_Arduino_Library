@@ -28,7 +28,6 @@
 //Constructor
 MP3TRIGGER::MP3TRIGGER()
 {
-
 }
 
 //Initializes the device with basic settings
@@ -41,11 +40,11 @@ boolean MP3TRIGGER::begin(TwoWire &wirePort, uint8_t deviceAddress)
 
   if (isConnected() == false)
   {
-	delay(2000); //Device may take up to 1500ms to mount the SD card
-	
-	//Try again
-	if (isConnected() == false)
-	  return (false); //No device detected
+    delay(2000); //Device may take up to 1500ms to mount the SD card
+
+    //Try again
+    if (isConnected() == false)
+      return (false); //No device detected
   }
 
   return (true); //We're all setup!
@@ -54,7 +53,8 @@ boolean MP3TRIGGER::begin(TwoWire &wirePort, uint8_t deviceAddress)
 //Returns true if I2C device has the correct ID
 boolean MP3TRIGGER::isConnected()
 {
-  if(getID() == 0x39) return(true); //MP3 Trigger ID should be 0x39
+  if (getID() == 0x39)
+    return (true); //MP3 Trigger ID should be 0x39
   return (false);
 }
 
@@ -63,7 +63,7 @@ uint8_t MP3TRIGGER::getID()
 {
   sendCommand(COMMAND_GET_ID);
 
-  return(getResponse()); //Should return 0x39
+  return (getResponse()); //Should return 0x39
 }
 
 //Checks the status of the player to see if MP3 is playing
@@ -74,14 +74,15 @@ boolean MP3TRIGGER::isPlaying()
 
   //0:stop, 1: play
   byte playStatus = getResponse();
-  if(playStatus == 0x01) return(true);
-  return(false);
+  if (playStatus == 0x01)
+    return (true);
+  return (false);
 }
 
 //Change the I2C address of this address to newAddress
 //If you forget what address you've set the QMP3 to then close the
 //ADR jumper. This will force the I2C address to 0x36
-boolean MP3TRIGGER::setAddress(byte newAddress)
+void MP3TRIGGER::setAddress(byte newAddress)
 {
   sendCommand(COMMAND_SET_ADDRESS, newAddress);
   _deviceAddress = newAddress; //Change the global variable to match the new address
@@ -98,14 +99,14 @@ void MP3TRIGGER::clearInterrupts()
 //however. playTrack(4) will play whatever is in the 4th file.
 void MP3TRIGGER::playTrack(byte trackNumber)
 {
-  sendCommand(COMMAND_PLAY_TRACK, trackNumber); //Play track  
+  sendCommand(COMMAND_PLAY_TRACK, trackNumber); //Play track
 }
 
-//Plays a file that has been named specifically. 
+//Plays a file that has been named specifically.
 //For example: passing in 6 will play F006xxx.mp3
 void MP3TRIGGER::playFile(byte fileNumber)
 {
-  sendCommand(COMMAND_PLAY_FILENUMBER, fileNumber); //Play file number  
+  sendCommand(COMMAND_PLAY_FILENUMBER, fileNumber); //Play file number
 }
 
 //Play the next track
@@ -125,7 +126,7 @@ void MP3TRIGGER::playPrevious()
 }
 
 //Pause a currently playing song, or begin playing if current track is paused
-boolean MP3TRIGGER::pause()
+void MP3TRIGGER::pause()
 {
   sendCommand(COMMAND_PAUSE);
 }
@@ -148,13 +149,14 @@ uint8_t MP3TRIGGER::getEQ()
 {
   sendCommand(COMMAND_GET_EQ);
 
-  return(getResponse());
+  return (getResponse());
 }
 
 //Change volume to zero (off) to 31 (max)
 void MP3TRIGGER::setVolume(byte volumeLevel)
 {
-  if(volumeLevel > 31) volumeLevel = 31; //Error check
+  if (volumeLevel > 31)
+    volumeLevel = 31;                           //Error check
   sendCommand(COMMAND_SET_VOLUME, volumeLevel); //Change volume
 }
 
@@ -163,14 +165,14 @@ uint8_t MP3TRIGGER::getVolume()
 {
   sendCommand(COMMAND_GET_VOLUME);
 
-  return(getResponse());
+  return (getResponse());
 }
 
 //Get the current status of the Qwiic MP3
 //0=OK, 1=Fail, 2=No such file, 5=SD Error
 byte MP3TRIGGER::getStatus()
 {
-  return(getResponse());
+  return (getResponse());
 }
 
 //Checks to see if MP3 player has a valid SD card
@@ -179,13 +181,13 @@ boolean MP3TRIGGER::hasCard()
   sendCommand(COMMAND_GET_CARD_STATUS);
 
   delay(50); //Give the QMP3 time to get the status byte from MP3 IC before we ask for it
-  
-  return(getResponse());
+
+  return (getResponse());
 }
 
 //Get the 8 characters of the song currently playing
 //Returns a character array of the song currently playing, terminated with \0
-char * MP3TRIGGER::getSongName()
+char *MP3TRIGGER::getSongName()
 {
   static char thisSongName[9]; //Max is 12345678\0
   sendCommand(COMMAND_GET_SONG_NAME);
@@ -195,17 +197,17 @@ char * MP3TRIGGER::getSongName()
   _i2cPort->requestFrom((uint8_t)_deviceAddress, (uint8_t)8); //Song names are max 8 chars
 
   uint8_t spot = 0;
-  while(_i2cPort->available())
+  while (_i2cPort->available())
   {
-	  uint8_t incoming = _i2cPort->read();
-	  if(spot < 8)
-	  {
-		thisSongName[spot++] = incoming;
-	  }
+    uint8_t incoming = _i2cPort->read();
+    if (spot < 8)
+    {
+      thisSongName[spot++] = incoming;
+    }
   }
   thisSongName[spot] = '\0'; //Terminate string
-  
-  return(thisSongName);
+
+  return (thisSongName);
 }
 
 //Get the number of songs on the SD card (in root and subfolders)
@@ -214,7 +216,7 @@ byte MP3TRIGGER::getSongCount()
 {
   sendCommand(COMMAND_GET_SONG_COUNT); //Get current song count
 
-  return(getResponse());
+  return (getResponse());
 }
 
 //getFirmwareVersion() returns the firmware version as a float.
@@ -224,7 +226,8 @@ float MP3TRIGGER::getVersion()
 
   _i2cPort->requestFrom((uint8_t)_deviceAddress, (uint8_t)2); //2 bytes for Version
 
-  if (_i2cPort->available() == 0) return 0;
+  if (_i2cPort->available() == 0)
+    return 0;
   float versionNumber = _i2cPort->read();
   versionNumber += (float)_i2cPort->read() / 10.0;
 
@@ -238,8 +241,8 @@ boolean MP3TRIGGER::sendCommand(byte command, byte option)
   _i2cPort->write(command);
   _i2cPort->write(option);
   if (_i2cPort->endTransmission() != 0)
-    return(false); //Sensor did not ACK
-  return(true);
+    return (false); //Sensor did not ACK
+  return (true);
 }
 
 //Send just a command to Qwiic MP3
@@ -248,8 +251,8 @@ boolean MP3TRIGGER::sendCommand(byte command)
   _i2cPort->beginTransmission(_deviceAddress);
   _i2cPort->write(command);
   if (_i2cPort->endTransmission() != 0)
-    return(false); //Sensor did not ACK
-  return(true);
+    return (false); //Sensor did not ACK
+  return (true);
 }
 
 //Ask for a byte from Qwiic MP3
@@ -262,5 +265,5 @@ byte MP3TRIGGER::getResponse()
   if (_i2cPort->available())
     return (_i2cPort->read());
 
-  return(0); //Error
+  return (0); //Error
 }
